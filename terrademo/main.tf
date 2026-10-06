@@ -8,15 +8,16 @@ terraform {
 }
 
 provider "google" {
-  credentials = "./keys/my-creds.json"
-  project = "terraform-demo-510809"
-  region  = "us-central1"
+  credentials = file(var.credentials)
+  project     = var.project
+  region      = "us-central1"
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  name          = "terraform-demo-510809-terra-bucket"
-  location      = "US"
-  force_destroy = true
+  name                        = var.gcs_bucket_name
+  storage_class               = var.gcs_storage_class
+  location                    = var.location
+  force_destroy               = true
   uniform_bucket_level_access = true
 
   lifecycle_rule {
@@ -36,4 +37,9 @@ resource "google_storage_bucket" "demo-bucket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id = var.bq_dataset_name
+  location   = var.location
 }
